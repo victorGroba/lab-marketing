@@ -10,6 +10,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-labmarketing}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-labuser}"]
       interval: 10s
@@ -28,10 +30,17 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-labuser}:${POSTGRES_PASSWORD:-labpass}@db:5432/${POSTGRES_DB:-labmarketing}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      UPLOADS_DIR: /app/uploads
     volumes:
       - uploads:/app/uploads
     ports:
-      - "${APP_PORT:-3000}:3000"
+      - "${APP_PORT:-3007}:3000"
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
 
 volumes:
   pgdata:
