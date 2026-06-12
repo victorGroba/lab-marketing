@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CalendarioMensal } from "@/components/posts/CalendarioMensal";
 import { StatusBadge } from "@/components/posts/StatusBadge";
-import { STATUS_LABELS } from "@/types";
+import { STATUS_LABELS, STATUS_ORDER } from "@/types";
 
 async function getResumo() {
   const counts = await prisma.post.groupBy({ by: ["status"], _count: { _all: true } });
@@ -30,8 +30,6 @@ async function getTodosPosts() {
     imagem: p.imagens[0]?.caminhoArquivo ?? null,
   }));
 }
-
-const STATUS_ORDER = ["RASCUNHO", "REVISAO", "APROVADO", "PUBLICADO"];
 
 export default async function DashboardPage() {
   const session = await auth();

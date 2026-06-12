@@ -1,5 +1,7 @@
 export type { Papel, StatusPost, Post, User, Imagem, Comentario, Historico } from "@prisma/client";
 
+export const STATUS_ORDER = ["RASCUNHO", "REVISAO", "APROVADO", "PUBLICADO"] as const;
+
 export const PILARES = [
   "Educacao em Saude",
   "Qualidade",

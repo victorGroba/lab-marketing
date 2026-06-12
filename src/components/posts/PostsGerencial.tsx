@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PostCard } from "./PostCard";
 import { NovoPostModal } from "./NovoPostModal";
-import { STATUS_LABELS, PILARES } from "@/types";
+import { STATUS_LABELS, STATUS_ORDER, PILARES } from "@/types";
 
 type Post = {
   id: string;
@@ -16,8 +16,6 @@ type Post = {
   imagens: { caminhoArquivo: string }[];
   comentarios: { id: string }[];
 };
-
-const STATUS_ORDER = ["RASCUNHO", "REVISAO", "APROVADO", "PUBLICADO"];
 
 const STATUS_CHIP: Record<string, string> = {
   TODOS:     "bg-gray-900 text-white",
