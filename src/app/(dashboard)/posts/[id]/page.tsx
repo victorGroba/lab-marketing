@@ -6,6 +6,7 @@ import { PostEditor } from "@/components/posts/PostEditor";
 import { ImageUpload } from "@/components/posts/ImageUpload";
 import { Comentarios } from "@/components/posts/Comentarios";
 import { HistoricoTimeline } from "@/components/posts/HistoricoTimeline";
+import { BotaoExcluirPost } from "@/components/posts/BotaoExcluirPost";
 
 async function getPost(id: string) {
   return prisma.post.findUnique({
@@ -35,12 +36,22 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href="/dashboard" className="hover:text-teal-500 transition-colors">
-          Dashboard
-        </Link>
-        <span>/</span>
-        <span className="text-gray-900 font-medium truncate max-w-xs">{post.titulo}</span>
+      <nav className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-gray-500">
+          <Link href="/dashboard" className="hover:text-teal-500 transition-colors">
+            Dashboard
+          </Link>
+          <span>/</span>
+          <Link href="/posts" className="hover:text-teal-500 transition-colors">
+            Posts
+          </Link>
+          <span>/</span>
+          <span className="text-gray-900 font-medium truncate max-w-xs">{post.titulo}</span>
+        </div>
+
+        {post.status !== "PUBLICADO" && (
+          <BotaoExcluirPost postId={post.id} />
+        )}
       </nav>
 
       {/* Editor */}

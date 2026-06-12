@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import { StatusPost } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { STATUS_FLOW } from "@/types";
@@ -140,6 +141,19 @@ export async function adicionarComentarioAction(postId: string, texto: string) {
 
   revalidatePath(`/posts/${postId}`);
   return { erro: null };
+}
+
+export async function excluirPostAction(postId: string) {
+  const session = await auth();
+  if (!session) return { erro: "Nao autenticado" };
+
+  const post = await prisma.post.findUnique({ where: { id: postId } });
+  if (!post) return { erro: "Post nao encontrado" };
+
+  if (post.status === "PUBLICADO") return { erro: "Nao e possivel excluir um post ja publicado" };
+
+  await prisma.post.delete({ where: { id: postId } });
+  redirect("/posts");
 }
 
 export async function excluirImagemAction(imagemId: string, postId: string) {
