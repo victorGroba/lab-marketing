@@ -25,8 +25,8 @@ const STATUS_CHIP: Record<string, string> = {
   PUBLICADO: "bg-teal-500 text-white hover:bg-teal-600",
 };
 
-export function PostsGerencial({ posts }: { posts: Post[] }) {
-  const [filtroStatus, setFiltroStatus] = useState("TODOS");
+export function PostsGerencial({ posts, filtroStatusInicial = "TODOS" }: { posts: Post[]; filtroStatusInicial?: string }) {
+  const [filtroStatus, setFiltroStatus] = useState(filtroStatusInicial);
   const [filtroPilar, setFiltroPilar] = useState("TODOS");
   const [busca, setBusca] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);

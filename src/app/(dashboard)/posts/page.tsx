@@ -18,7 +18,11 @@ async function getTodosPosts() {
   });
 }
 
-export default async function PostsPage() {
+export default async function PostsPage({
+  searchParams,
+}: {
+  searchParams: { status?: string };
+}) {
   const session = await auth();
   if (!session) redirect("/login");
 
@@ -30,7 +34,7 @@ export default async function PostsPage() {
         <h1 className="text-xl font-bold text-gray-900">Posts</h1>
         <p className="text-sm text-gray-400 mt-0.5">{posts.length} posts no plano de conteudo</p>
       </div>
-      <PostsGerencial posts={posts} />
+      <PostsGerencial posts={posts} filtroStatusInicial={searchParams.status ?? "TODOS"} />
     </div>
   );
 }
