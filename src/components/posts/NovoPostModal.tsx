@@ -3,14 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { criarPostAction } from "@/app/(dashboard)/dashboard/actions";
-
-const PILARES = [
-  "Educacao em Saude",
-  "Qualidade",
-  "Institucional",
-  "Promocoes",
-  "Resultados",
-];
+import { PILARES } from "@/types";
 
 export function NovoPostModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();

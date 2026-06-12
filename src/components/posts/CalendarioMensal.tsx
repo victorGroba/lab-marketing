@@ -5,6 +5,7 @@ import Link from "next/link";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { NovoPostModal } from "./NovoPostModal";
+import { PILAR_GRADIENT } from "@/types";
 
 type PostResumido = {
   id: string;
@@ -20,14 +21,6 @@ const STATUS_DOT: Record<string, string> = {
   REVISAO:   "bg-amber-400",
   APROVADO:  "bg-teal-400",
   PUBLICADO: "bg-teal-600",
-};
-
-const PILAR_COLORS: Record<string, string> = {
-  "Educacao em Saude": "from-teal-400 to-teal-600",
-  "Qualidade":         "from-teal-600 to-teal-800",
-  "Institucional":     "from-gray-400 to-gray-600",
-  "Promocoes":         "from-amber-400 to-amber-600",
-  "Resultados":        "from-emerald-400 to-emerald-600",
 };
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
@@ -127,7 +120,7 @@ export function CalendarioMensal({ posts }: { posts: PostResumido[] }) {
                 {/* Posts */}
                 <div className="space-y-1.5">
                   {postsHoje.slice(0, 2).map((p) => {
-                    const gradiente = PILAR_COLORS[p.pilar] ?? "from-gray-300 to-gray-500";
+                    const gradiente = PILAR_GRADIENT[p.pilar] ?? "from-gray-300 to-gray-500";
                     return (
                       <Link key={p.id} href={`/posts/${p.id}`} className="block group">
                         <div className="relative rounded-xl overflow-hidden aspect-square w-full bg-gray-100 shadow-sm group-hover:shadow-md transition-shadow">

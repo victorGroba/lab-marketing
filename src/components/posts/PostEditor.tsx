@@ -5,15 +5,7 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { atualizarPostAction, avancarStatusAction, voltarStatusAction } from "@/app/(dashboard)/posts/[id]/actions";
 import { StatusBadge } from "./StatusBadge";
-import { STATUS_FLOW_LABELS, STATUS_FLOW } from "@/types";
-
-const PILARES = [
-  "Educacao em Saude",
-  "Qualidade",
-  "Institucional",
-  "Promocoes",
-  "Resultados",
-];
+import { STATUS_FLOW_LABELS, STATUS_FLOW, PILARES } from "@/types";
 
 type PostCompleto = {
   id: string;

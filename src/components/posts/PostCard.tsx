@@ -3,20 +3,13 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { PILAR_GRADIENT, STATUS_LABELS } from "@/types";
 
-const STATUS_STYLES: Record<string, { bg: string; dot: string; label: string }> = {
-  RASCUNHO:  { bg: "bg-gray-100 text-gray-600",    dot: "bg-gray-400",   label: "Rascunho" },
-  REVISAO:   { bg: "bg-amber-50 text-amber-700",   dot: "bg-amber-400",  label: "Em Revisao" },
-  APROVADO:  { bg: "bg-teal-50 text-teal-700",     dot: "bg-teal-400",   label: "Aprovado" },
-  PUBLICADO: { bg: "bg-teal-500 text-white",       dot: "bg-white",      label: "Publicado" },
-};
-
-const PILAR_COLORS: Record<string, string> = {
-  "Educacao em Saude": "from-teal-400 to-teal-600",
-  "Qualidade":         "from-teal-600 to-teal-800",
-  "Institucional":     "from-gray-400 to-gray-600",
-  "Promocoes":         "from-amber-400 to-amber-600",
-  "Resultados":        "from-emerald-400 to-emerald-600",
+const STATUS_STYLES: Record<string, { bg: string; dot: string }> = {
+  RASCUNHO:  { bg: "bg-gray-100 text-gray-600",  dot: "bg-gray-400"  },
+  REVISAO:   { bg: "bg-amber-50 text-amber-700", dot: "bg-amber-400" },
+  APROVADO:  { bg: "bg-teal-50 text-teal-700",   dot: "bg-teal-400"  },
+  PUBLICADO: { bg: "bg-teal-500 text-white",      dot: "bg-white"     },
 };
 
 type PostCardProps = {
@@ -35,7 +28,7 @@ export function PostCard({
   id, titulo, pilar, status, dataAgendada, legenda, hashtags, imagem, totalComentarios,
 }: PostCardProps) {
   const st = STATUS_STYLES[status] ?? STATUS_STYLES.RASCUNHO;
-  const gradiente = PILAR_COLORS[pilar] ?? "from-gray-300 to-gray-500";
+  const gradiente = PILAR_GRADIENT[pilar] ?? "from-gray-300 to-gray-500";
 
   return (
     <Link href={`/posts/${id}`} className="group block">
@@ -63,7 +56,7 @@ export function PostCard({
           <div className="absolute top-2.5 left-2.5">
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${st.bg}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
-              {st.label}
+              {STATUS_LABELS[status] ?? status}
             </span>
           </div>
 
@@ -79,8 +72,8 @@ export function PostCard({
         <div className="p-4">
           {/* Pilar */}
           <div className="flex items-center gap-1.5 mb-2">
-            <span className={`w-2 h-2 rounded-full bg-gradient-to-br ${gradiente}`} />
-            <span className="text-xs text-gray-400 font-medium">{pilar}</span>
+            <span className={`w-2 h-2 rounded-full bg-gradient-to-br flex-shrink-0 ${gradiente}`} />
+            <span className="text-xs text-gray-400 font-medium truncate">{pilar}</span>
           </div>
 
           {/* Titulo */}

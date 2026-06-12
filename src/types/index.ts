@@ -1,5 +1,15 @@
 export type { Papel, StatusPost, Post, User, Imagem, Comentario, Historico } from "@prisma/client";
 
+export const PILARES = [
+  "Educacao em Saude",
+  "Qualidade",
+  "Institucional",
+  "Promocoes",
+  "Resultados",
+] as const;
+
+export type Pilar = (typeof PILARES)[number];
+
 export const STATUS_LABELS: Record<string, string> = {
   RASCUNHO:  "Rascunho",
   REVISAO:   "Em Revisao",
@@ -15,11 +25,27 @@ export const STATUS_COLORS: Record<string, string> = {
 };
 
 export const PILAR_COLORS: Record<string, string> = {
-  "Educacao em Saude":   "border-l-teal-400",
-  "Qualidade":           "border-l-teal-600",
-  "Institucional":       "border-l-gray-500",
-  "Promocoes":           "border-l-yellow-500",
-  "Resultados":          "border-l-green-500",
+  "Educacao em Saude": "border-l-teal-400",
+  "Qualidade":         "border-l-teal-600",
+  "Institucional":     "border-l-gray-500",
+  "Promocoes":         "border-l-yellow-500",
+  "Resultados":        "border-l-green-500",
+};
+
+export const PILAR_GRADIENT: Record<string, string> = {
+  "Educacao em Saude": "from-teal-400 to-teal-600",
+  "Qualidade":         "from-teal-600 to-teal-800",
+  "Institucional":     "from-gray-400 to-gray-600",
+  "Promocoes":         "from-amber-400 to-amber-600",
+  "Resultados":        "from-emerald-400 to-emerald-600",
+};
+
+export const PILAR_DOT: Record<string, string> = {
+  "Educacao em Saude": "bg-teal-400",
+  "Qualidade":         "bg-teal-600",
+  "Institucional":     "bg-gray-500",
+  "Promocoes":         "bg-amber-500",
+  "Resultados":        "bg-emerald-500",
 };
 
 export const STATUS_FLOW: Record<string, string | null> = {
