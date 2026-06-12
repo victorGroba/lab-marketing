@@ -48,3 +48,12 @@ body {
 .card {
   @apply bg-white rounded-xl border border-gray-200 shadow-sm;
 }
+
+@keyframes scale-in {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.border-3 {
+  border-width: 3px;
+}
