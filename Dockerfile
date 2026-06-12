@@ -5,7 +5,7 @@ RUN apk add --no-cache libc6-compat openssl
 # ---- deps ----
 FROM base AS deps
 COPY package.json package-lock.json* ./
-RUN npm install --frozen-lockfile || npm install
+RUN npm install --legacy-peer-deps
 
 # ---- builder ----
 FROM base AS builder
