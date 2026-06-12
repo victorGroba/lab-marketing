@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { StatusBadge } from "./StatusBadge";
-import { PilarDot } from "./PilarDot";
+import { PostCard } from "./PostCard";
 import { NovoPostModal } from "./NovoPostModal";
 import { STATUS_LABELS } from "@/types";
 
@@ -15,21 +11,26 @@ type Post = {
   pilar: string;
   status: string;
   dataAgendada: Date | null;
-  baseNormativa: string | null;
   legenda: string | null;
   hashtags: string | null;
-  criadoEm: Date;
-  criadoPor: { nome: string; papel: string };
-  imagens: { id: string }[];
+  imagens: { caminhoArquivo: string }[];
   comentarios: { id: string }[];
 };
 
 const STATUS_ORDER = ["RASCUNHO", "REVISAO", "APROVADO", "PUBLICADO"];
 const PILARES = ["Educacao em Saude", "Qualidade", "Institucional", "Promocoes", "Resultados"];
 
+const STATUS_CHIP: Record<string, string> = {
+  TODOS:     "bg-gray-900 text-white",
+  RASCUNHO:  "bg-gray-100 text-gray-700 hover:bg-gray-200",
+  REVISAO:   "bg-amber-50 text-amber-700 hover:bg-amber-100",
+  APROVADO:  "bg-teal-50 text-teal-700 hover:bg-teal-100",
+  PUBLICADO: "bg-teal-500 text-white hover:bg-teal-600",
+};
+
 export function PostsGerencial({ posts }: { posts: Post[] }) {
-  const [filtroStatus, setFiltroStatus] = useState<string>("TODOS");
-  const [filtroPilar, setFiltroPilar] = useState<string>("TODOS");
+  const [filtroStatus, setFiltroStatus] = useState("TODOS");
+  const [filtroPilar, setFiltroPilar] = useState("TODOS");
   const [busca, setBusca] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
 
@@ -37,173 +38,93 @@ export function PostsGerencial({ posts }: { posts: Post[] }) {
     const okStatus = filtroStatus === "TODOS" || p.status === filtroStatus;
     const okPilar = filtroPilar === "TODOS" || p.pilar === filtroPilar;
     const okBusca =
-      busca === "" ||
+      !busca ||
       p.titulo.toLowerCase().includes(busca.toLowerCase()) ||
       (p.legenda ?? "").toLowerCase().includes(busca.toLowerCase()) ||
       (p.hashtags ?? "").toLowerCase().includes(busca.toLowerCase());
     return okStatus && okPilar && okBusca;
   });
 
-  // Contadores por status
-  const contadores = STATUS_ORDER.reduce((acc, s) => {
-    acc[s] = posts.filter((p) => p.status === s).length;
-    return acc;
-  }, {} as Record<string, number>);
+  const contadores: Record<string, number> = { TODOS: posts.length };
+  STATUS_ORDER.forEach((s) => { contadores[s] = posts.filter((p) => p.status === s).length; });
 
   return (
-    <div className="space-y-5">
-      {/* Filtros */}
-      <div className="card p-4 flex flex-wrap items-center gap-3">
-        {/* Busca */}
-        <div className="relative flex-1 min-w-48">
+    <div className="space-y-6">
+      {/* Barra superior */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 min-w-56">
           <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
             type="text"
-            placeholder="Buscar por titulo, legenda ou hashtag..."
+            placeholder="Buscar posts..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             className="input pl-9 text-sm"
           />
         </div>
 
-        {/* Filtro status */}
-        <select
-          value={filtroStatus}
-          onChange={(e) => setFiltroStatus(e.target.value)}
-          className="input w-auto text-sm"
-        >
-          <option value="TODOS">Todos os status</option>
-          {STATUS_ORDER.map((s) => (
-            <option key={s} value={s}>
-              {STATUS_LABELS[s]} ({contadores[s] ?? 0})
-            </option>
-          ))}
-        </select>
-
-        {/* Filtro pilar */}
         <select
           value={filtroPilar}
           onChange={(e) => setFiltroPilar(e.target.value)}
           className="input w-auto text-sm"
         >
           <option value="TODOS">Todos os pilares</option>
-          {PILARES.map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
+          {PILARES.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
 
-        <button onClick={() => setMostrarModal(true)} className="btn-primary text-sm ml-auto">
+        <button onClick={() => setMostrarModal(true)} className="btn-primary">
           + Novo Post
         </button>
       </div>
 
       {/* Chips de status */}
       <div className="flex flex-wrap gap-2">
-        {STATUS_ORDER.map((s) => (
-          <button
-            key={s}
-            onClick={() => setFiltroStatus(filtroStatus === s ? "TODOS" : s)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              filtroStatus === s
-                ? "bg-teal-400 text-white border-teal-400"
-                : "bg-white text-gray-600 border-gray-200 hover:border-teal-300"
-            }`}
-          >
-            {STATUS_LABELS[s]} {contadores[s] > 0 && <span className="ml-1 opacity-75">{contadores[s]}</span>}
-          </button>
-        ))}
+        {["TODOS", ...STATUS_ORDER].map((s) => {
+          const ativo = filtroStatus === s;
+          return (
+            <button
+              key={s}
+              onClick={() => setFiltroStatus(s)}
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                ativo
+                  ? "bg-teal-400 text-white border-teal-400 shadow-sm"
+                  : "bg-white text-gray-500 border-gray-200 hover:border-teal-300 hover:text-teal-600"
+              }`}
+            >
+              {s === "TODOS" ? "Todos" : STATUS_LABELS[s]}
+              <span className="ml-1.5 opacity-60">{contadores[s]}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Resultado */}
-      <p className="text-xs text-gray-400">
-        {postsFiltrados.length} {postsFiltrados.length === 1 ? "post encontrado" : "posts encontrados"}
-      </p>
-
-      {/* Tabela */}
+      {/* Grade de cards */}
       {postsFiltrados.length === 0 ? (
-        <div className="card p-12 text-center text-gray-400">
-          Nenhum post encontrado com esses filtros.
+        <div className="flex flex-col items-center justify-center py-24 text-gray-300">
+          <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1}
+              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm">Nenhum post encontrado</p>
         </div>
       ) : (
-        <div className="card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Post</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Pilar</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Agendado</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Criado por</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Imgs</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Coment.</th>
-                <th className="px-4 py-3"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {postsFiltrados.map((post) => (
-                <tr key={post.id} className="hover:bg-gray-50 transition-colors">
-                  {/* Titulo */}
-                  <td className="px-5 py-4">
-                    <p className="font-medium text-gray-900 leading-tight">{post.titulo}</p>
-                    {post.baseNormativa && (
-                      <p className="text-xs text-gray-400 mt-0.5">{post.baseNormativa}</p>
-                    )}
-                    {post.legenda && (
-                      <p className="text-xs text-gray-400 mt-0.5 line-clamp-1 max-w-xs">{post.legenda}</p>
-                    )}
-                  </td>
-
-                  {/* Pilar */}
-                  <td className="px-4 py-4 hidden md:table-cell">
-                    <PilarDot pilar={post.pilar} />
-                  </td>
-
-                  {/* Status */}
-                  <td className="px-4 py-4">
-                    <StatusBadge status={post.status} />
-                  </td>
-
-                  {/* Data */}
-                  <td className="px-4 py-4 hidden lg:table-cell text-gray-600">
-                    {post.dataAgendada
-                      ? format(new Date(post.dataAgendada), "dd/MM/yyyy", { locale: ptBR })
-                      : <span className="text-gray-300 italic">Sem data</span>}
-                  </td>
-
-                  {/* Criado por */}
-                  <td className="px-4 py-4 hidden lg:table-cell text-gray-500 text-xs">
-                    {post.criadoPor.nome}
-                  </td>
-
-                  {/* Imagens */}
-                  <td className="px-4 py-4 text-center hidden md:table-cell">
-                    <span className={`text-xs font-medium ${post.imagens.length > 0 ? "text-teal-600" : "text-gray-300"}`}>
-                      {post.imagens.length > 0 ? post.imagens.length : "-"}
-                    </span>
-                  </td>
-
-                  {/* Comentarios */}
-                  <td className="px-4 py-4 text-center hidden md:table-cell">
-                    <span className={`text-xs font-medium ${post.comentarios.length > 0 ? "text-teal-600" : "text-gray-300"}`}>
-                      {post.comentarios.length > 0 ? post.comentarios.length : "-"}
-                    </span>
-                  </td>
-
-                  {/* Acao */}
-                  <td className="px-4 py-4 text-right">
-                    <Link
-                      href={`/posts/${post.id}`}
-                      className="text-teal-500 hover:text-teal-700 text-xs font-medium transition-colors whitespace-nowrap"
-                    >
-                      Abrir
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {postsFiltrados.map((post) => (
+            <PostCard
+              key={post.id}
+              id={post.id}
+              titulo={post.titulo}
+              pilar={post.pilar}
+              status={post.status}
+              dataAgendada={post.dataAgendada}
+              legenda={post.legenda}
+              hashtags={post.hashtags}
+              imagem={post.imagens[0]?.caminhoArquivo ?? null}
+              totalComentarios={post.comentarios.length}
+            />
+          ))}
         </div>
       )}
 
